@@ -3,6 +3,127 @@
  */
 package project.dowjonesstocktracker;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.stage.Stage;
+
+import yahoofinance.YahooFinance;
+import yahoofinance.Stock;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class App extends Application {
+
+    // The URL for the API
+    private static final String YAHOO_FINANCE_API = "https://finance.yahoo.com/quote/";
+
+    // Stock symbol for the Dow Jones Industrial Average
+    private static final String SYMBOL = "^DJI";
+    private static final int WAIT_TIME_MS = 5000;
+    private static final int MAX_DATA_POINTS = 60; // Maximum data points to store (one minute of data if queried every 5 seconds)
+
+    private Queue<ArrayList<Object>> stockDataQueue = new LinkedList<>();
+    private XYChart.Series<Number, Number> series = new XYChart.Series<>();
+    private int timeCounter = 0; // Counter for time ticks (in seconds)
+
+    public static void main(String[] args) {
+        // Launch the JavaFX application
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage stage) {
+        // Set up X and Y axes for the graph
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Time (s)");
+
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Stock Price (USD)");
+
+        // Create the LineChart with axes
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.getData().add(series);
+
+        // Set up the Scene and Stage
+        Scene scene = new Scene(lineChart, 800, 600);
+        stage.setTitle("Dow Jones Stock Price Tracker");
+        stage.setScene(scene);
+        stage.show();
+
+        // Timeline to refresh the graph and update the stock data
+        Timeline timeline = new Timeline(new KeyFrame(javafx.util.Duration.seconds(5), e -> updateGraph()));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+
+        // Start querying stock data in a separate thread
+        new Thread(() -> queryStockData()).start();
+    }
+
+    private void queryStockData() {
+        while (true) {
+            try {
+                // Try to query the stock information
+                Stock stock = YahooFinance.get(SYMBOL);
+                // Get the current stock price
+                BigDecimal price = stock.getQuote().getPrice();
+                // Record the timestamp for the query
+                Date timestamp = new Date();
+
+                // Add the stock data to the queue (timestamp, price)
+                ArrayList<Object> stockData = new ArrayList<>();
+                stockData.add(timestamp);
+                stockData.add(price);
+                stockDataQueue.add(stockData);
+
+                // Ensure that the queue size does not exceed MAX_DATA_POINTS
+                if (stockDataQueue.size() > MAX_DATA_POINTS) {
+                    stockDataQueue.poll(); // Remove the oldest data
+                }
+
+                // Print the stockData to console for debugging
+                System.out.println(stockData);
+
+            } catch (IOException e) {
+                System.out.println("Failure to connect. Trying again.");
+            }
+
+            // Wait before repeating the query
+            try {
+                Thread.sleep(WAIT_TIME_MS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void updateGraph() {
+        // Clear the existing data from the series
+        series.getData().clear();
+        timeCounter = 0;
+
+        // Iterate through the stock data in the queue and update the graph
+        for (ArrayList<Object> stockData : stockDataQueue) {
+            Date timestamp = (Date) stockData.get(0);
+            BigDecimal price = (BigDecimal) stockData.get(1);
+
+            // Add the data to the series (x: timeCounter, y: price)
+            series.getData().add(new XYChart.Data<>(timeCounter++, price.doubleValue()));
+        }
+    }
+}
+
+
+/*
 import com.crazzyghost.alphavantage.AlphaVantage;
 import com.crazzyghost.alphavantage.parameters.Interval;
 import com.crazzyghost.alphavantage.timeseries.TimeSeriesResponse;
@@ -28,6 +149,7 @@ public class App {
         }
     }
 }
+*/
 
 /**
 public class App {

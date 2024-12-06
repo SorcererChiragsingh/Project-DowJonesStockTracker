@@ -8,6 +8,8 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'org.beryx.jlink' version '3.0.1'
 }
 
 repositories {
@@ -31,6 +33,9 @@ dependencies {
 
     implementation 'com.github.crazzyghost:alphavantage-java:1.6.0' // Correct dependency
 
+    implementation 'org.openjfx:javafx-controls:19'
+    implementation 'yahoofinance-api:yahoofinance-api:3.18.1'
+
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -48,4 +53,17 @@ application {
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+javafx {
+    version = "23.0.1"
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+
+}
+
+jlink {
+    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+    launcher {
+        name = 'dowjonesstocktrackerfx'
+    }
 }
