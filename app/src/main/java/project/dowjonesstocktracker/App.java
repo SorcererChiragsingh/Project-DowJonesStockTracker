@@ -3,6 +3,33 @@
  */
 package project.dowjonesstocktracker;
 
+import com.crazzyghost.alphavantage.AlphaVantage;
+import com.crazzyghost.alphavantage.parameters.Interval;
+import com.crazzyghost.alphavantage.timeseries.TimeSeriesResponse;
+
+public class App {
+    public static void main(String[] args) {
+        String apiKey = "JLJUSWF3YTNLAYE1"; // Replace with your API key
+        AlphaVantage.api()
+            .init(apiKey);
+
+        try {
+            TimeSeriesResponse response = AlphaVantage.api()
+                .timeSeries()
+                .intraday()
+                .symbol("DJI")
+                .interval(Interval.FIVE_MIN)
+                .fetchSync();
+
+            System.out.println(response.getMetaData().getInformation());
+            System.out.println(response.getStockData());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+/**
 public class App {
     public String getGreeting() {
         return "Hello World!";
@@ -12,3 +39,4 @@ public class App {
         System.out.println(new App().getGreeting());
     }
 }
+*/

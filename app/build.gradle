@@ -13,6 +13,7 @@ plugins {
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
+    maven { url 'https://jitpack.io' } // Add JitPack repository
 }
 
 dependencies {
@@ -25,6 +26,11 @@ dependencies {
     implementation libs.guava
 
     implementation group: 'com.yahoofinance-api', name: 'YahooFinanceAPI', version: '3.17.0'
+
+    implementation 'com.crazzyghost:alphavantage:1.6.0'
+
+    implementation 'com.github.crazzyghost:alphavantage-java:1.6.0' // Correct dependency
+
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
