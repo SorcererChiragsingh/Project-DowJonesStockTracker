@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class App extends Application {
+public class dowjonesstocktracker extends Application {
 
     // The URL for the API
     private static final String YAHOO_FINANCE_API = "https://finance.yahoo.com/quote/";
