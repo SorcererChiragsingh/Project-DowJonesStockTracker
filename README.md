@@ -61,10 +61,9 @@ In this task, you'll update your existing application so that it displays a line
 3. Update the App.java file for your existing application to add a feature that displays a line graph every time Yahoo Finance is queried. This line graph should have a time tick on the x-axis and the stock price on the y-axis. This plot should update each time your application queries a stock price. On refresh, it should display all the currently stored stock prices.
 
 4. Compile your application by running the command "gradle build".
-   ## done with this project
 
-6. Run your application by running the command "gradle run".
+5. Run your application by running the command "gradle run".
 
-7. Test your application and debug as needed.
+6. Test your application and debug as needed.
 
 When you're satisfied with your application, submit your App.java file below.
